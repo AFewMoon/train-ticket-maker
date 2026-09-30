@@ -5,9 +5,20 @@
 [![Vue 3](https://img.shields.io/badge/Vue-3.x-4FC08D?logo=vue.js)](https://vuejs.org/)
 [![Vite](https://img.shields.io/badge/Vite-5.x-646CFF?logo=vite)](https://vitejs.dev/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.x-38B2AC?logo=tailwind-css)](https://tailwindcss.com/)
+[![Deploy to GitHub Pages](https://github.com/AFewMoon/train-ticket-maker/actions/workflows/deploy.yml/badge.svg)](https://github.com/AFewMoon/train-ticket-maker/actions/workflows/deploy.yml)
 [![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
 
 在线生成电子火车票样式图片的工具。支持实时预览、高清图导出、响应式设计和多种票务选项。
+
+---
+
+## 🌐 在线体验
+
+已通过 GitHub Pages 自动部署，直接打开即可使用，无需安装任何环境：
+
+**<https://afewmoon.github.io/train-ticket-maker/>**
+
+站点由 GitHub Actions 在每次推送到 `main` 分支后自动构建发布，构建与部署配置见 [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml)。
 
 ---
 
@@ -41,9 +52,11 @@
 | 技术 | 用途 |
 |------|------|
 | Vue 3 (Composition API) | 前端框架 |
+| Vue Router 4 | 路由（hash 模式） |
 | Vite | 构建工具 |
 | Tailwind CSS | 原子化 CSS |
 | html-to-image | HTML 转图片 |
+| GitHub Actions + GitHub Pages | 自动构建与托管 |
 
 ---
 
@@ -53,15 +66,43 @@
 # 安装依赖
 npm install
 
-# 开发模式
+# 开发模式（默认 http://localhost:3000/train-ticket-maker/）
 npm run dev
 
-# 构建打包
+# 构建打包（产物输出到 dist/）
 npm run build
 
-# 预览构建结果
+# 预览构建结果（默认 http://localhost:4173/train-ticket-maker/）
 npm run preview
 ```
+
+> 站点部署在 `/train-ticket-maker/` 子路径下，`vite.config.js` 中的 `base` 已设为该值，因此本地开发与预览地址都带子路径。
+> 若改用自定义域名或 `<用户名>.github.io` 根站点部署，需要把 `base` 改回 `'/'`。
+
+---
+
+## 🚀 部署到 GitHub Pages
+
+仓库已配置好自动化部署流程，**推送 `main` 分支即自动上线**，不需要手动构建或提交产物。
+
+```bash
+git add .
+git commit -m "your message"
+git push origin main
+```
+
+工作流步骤如下：
+
+1. `actions/checkout@v4` 拉取代码，`actions/setup-node@v4` 准备 Node 22 并缓存 npm；
+2. `actions/configure-pages@v5`（`enablement: true`）确保 Pages 已开启，Source 为 **GitHub Actions**；
+3. `npm ci && npm run build` 生成 `dist/`；
+4. `actions/upload-pages-artifact@v3` 上传产物，`actions/deploy-pages@v4` 发布到 Pages。
+
+### 注意事项
+
+- **构建产物不入库**：`dist/`、`release/` 已在 `.gitignore` 中忽略，产物完全交给 CI 生成。
+- **首次部署**：若 `Configure Pages` 步骤因权限报错，请在仓库 **Settings → Pages** 中把 **Source** 手动切换为 **GitHub Actions**，然后重新运行工作流。
+- 部署完成后，也可在 Actions 页面手动触发（`workflow_dispatch`）发布一次。
 
 ---
 
@@ -69,8 +110,12 @@ npm run preview
 
 ```
 train-ticket-maker/
+├── .github/
+│   └── workflows/
+│       └── deploy.yml      # GitHub Pages 自动部署流程
 ├── public/
-│   ├── CRH-Dr3OhT7q.jpg   # 蓝色车票背景纹理
+│   ├── .nojekyll           # 关闭 Jekyll 处理
+│   ├── CRH-Dr3OhT7q.jpg    # 蓝色车票背景纹理
 │   ├── bluebg.png          # 蓝色车票底图
 │   └── redbg.png           # 红色车票底图
 ├── src/
@@ -78,8 +123,13 @@ train-ticket-maker/
 │   │   └── qrcode.png      # 二维码图片
 │   ├── components/
 │   │   └── TrainTicket.vue # 车票核心组件
-│   └── views/
-│       └── TrainTicketGengrate.vue # 主页面
+│   ├── router/
+│   │   └── index.js        # 路由（hash 模式，单路由）
+│   ├── views/
+│   │   └── TrainTicketGengrate.vue # 主页面
+│   ├── App.vue
+│   ├── main.js
+│   └── style.css
 ├── index.html
 ├── package.json
 ├── vite.config.js

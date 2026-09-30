@@ -29,8 +29,8 @@
           aria-label="火车票"
         >
 
-          <!-- 顶部栏：红色车票隐藏 -->
-          <div class="topbar flex items-center justify-between tracking-[0.3px]" v-if="showHeader()">
+          <!-- 顶部栏（票号 + 检票口） -->
+          <div class="topbar flex items-center justify-between tracking-[0.3px]">
             <div class="serial text-[#e35757] font-semibold">{{ serial }}</div>
             <div class="gate" v-if="gate">检票：{{ gate }}</div>
           </div>
@@ -40,7 +40,7 @@
             <div
               v-if="!isRed"
               class="absolute inset-0 z-[-2] opacity-5 bg-bottom bg-no-repeat bg-contain"
-              :style="{ backgroundImage: 'url(./CRH-Dr3OhT7q.jpg)' }"
+              :style="{ backgroundImage: `url('${publicBase}CRH-Dr3OhT7q.jpg')` }"
             ></div>
 
             <!-- 主信息：出发站 / 车次 / 到达站 -->
@@ -163,6 +163,10 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 
+// public/ 目录资源的运行时基准路径：开发环境为 '/'，GitHub Pages 子路径下为 '/train-ticket-maker/'
+// import.meta.env.BASE_URL 由 vite.config.js 的 base 决定，末尾一定带 '/'
+const publicBase = import.meta.env.BASE_URL
+
 const validTypes = ['student', 'discount', 'child', 'elder', 'military', 'disabled', 'group', 'worker-group', 'student-group', '兑', '']
 
 // 基础尺寸
@@ -228,7 +232,9 @@ const props = defineProps({
 const isRed = computed(() => props.style === 'red')
 
 const backgroundImage = computed(() => {
-  return props.style === 'red' ? "url('./redbg.png')" : "url('./bluebg.png')"
+  return props.style === 'red'
+    ? `url('${publicBase}redbg.png')`
+    : `url('${publicBase}bluebg.png')`
 })
 
 const dateTime = computed(() => ({
