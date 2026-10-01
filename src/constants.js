@@ -36,3 +36,23 @@ export const DISCOUNT_TEXT_MAP = {
 
 // 合法优惠类型（空字符串表示「无优惠」）
 export const VALID_DISCOUNT_TYPES = [...Object.keys(DISCOUNT_TEXT_MAP), '']
+
+// 优惠类型下拉框选项：数组顺序即下拉框展示顺序（「无优惠」置顶）。
+// value 必须与 DISCOUNT_TEXT_MAP 的键保持一致；括号内的徽章提示由 DISCOUNT_TEXT_MAP 派生，
+// 因此徽章文案仍只有一处来源，新增优惠类型时只需在 DISCOUNT_TEXT_MAP 与下方列表各加一项。
+export const DISCOUNT_OPTIONS = [
+  { value: '', label: '无优惠' },
+  { value: 'student', label: '学生票' },
+  { value: 'child', label: '儿童票' },
+  { value: 'military', label: '残疾军人票' },
+  { value: 'disabled', label: '残疾人票' },
+  { value: 'elder', label: '老人优惠票' },
+  { value: 'discount', label: '普通优惠票' },
+  { value: 'group', label: '团体票' },
+  { value: 'worker-group', label: '务工团体票' },
+  { value: 'student-group', label: '学生团体票' },
+  { value: '兑', label: '积分兑换票' },
+].map(({ value, label }) => {
+  const badges = DISCOUNT_TEXT_MAP[value]
+  return { value, label, text: badges ? `${label}（${badges.join(' + ')}）` : label }
+})

@@ -56,11 +56,7 @@
 
                 <div><label class="block text-xs text-gray-500 mb-1">票价（元）</label><input v-model="form.price" type="number" step="0.5" class="w-full px-3 py-2 border rounded-md" placeholder="例：443.5" required></div>
                 <div><label class="block text-xs text-gray-500 mb-1">票号（左上角）</label><input v-model="form.serial" type="text" class="w-full px-3 py-2 border rounded-md" placeholder="例：A000001" required></div>
-                <div><label class="block text-xs text-gray-500 mb-1">优惠类型</label><select v-model="form.discountType" class="w-full px-3 py-2 border rounded-md">
-                  <option value="">无优惠</option><option value="student">学生票（学 + 惠）</option><option value="child">儿童票（儿）</option><option value="military">残疾军人票（军）</option>
-                  <option value="disabled">残疾人票（残）</option><option value="elder">老人优惠票（老）</option><option value="discount">普通优惠票（惠）</option><option value="group">团体票（团）</option>
-                  <option value="worker-group">务工团体票（工）</option><option value="student-group">学生团体票（学 + 团）</option><option value="兑">积分兑换票（兑）</option>
-                </select></div>
+                <div><label class="block text-xs text-gray-500 mb-1">优惠类型</label><select v-model="form.discountType" class="w-full px-3 py-2 border rounded-md"><option v-for="opt in DISCOUNT_OPTIONS" :key="opt.value" :value="opt.value">{{ opt.text }}</option></select></div>
               </div>
             </div>
 
@@ -156,7 +152,7 @@
 <script setup>
 import { ref, reactive, computed, onMounted, nextTick, watch } from 'vue'
 import TrainTicket from '@/components/TrainTicket.vue'
-import { SLEEPER_TYPES } from '@/constants'
+import { SLEEPER_TYPES, DISCOUNT_OPTIONS } from '@/constants'
 import { toPng } from 'html-to-image'
 
 const form = reactive({
