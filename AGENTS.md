@@ -5,6 +5,8 @@
 ## 项目概览
 
 - 纯前端项目：**Vue 3 + Vite 5 + Tailwind CSS 3**，用于在线生成火车票样式图片。
+- **单页无路由**：`main.js` 直接挂载 `views/TrainTicketGengrate.vue`，`vue-router` / `App.vue` 已移除，请勿再引入。
+- 共享常量（卧铺类型、优惠映射）统一放在 `src/constants.js`，供组件与 `defineProps` 的 validator 引用。
 - 无后端、无 Electron 桌面端（桌面端已于 `cb977df` 移除，请勿再引入 `main.js`、`icon.icns`、`icon.ico` 等残留）。
 - 通过 GitHub Actions 自动部署到 GitHub Pages，push 到 `main` 即上线。
 
@@ -38,9 +40,10 @@ npm run preview    # 预览构建结果，http://localhost:4173/train-ticket-mak
 
 ### 1. `defineProps` 会被提升，validator 里不能用后声明的局部常量
 
-`defineProps` 编译后提升到 `<script setup>` 顶部，因此其 `validator` **不能引用在它之后声明的局部变量**（如 `validTypes`），会抛提升错误。
+`defineProps` 编译后提升到 `<script setup>` 顶部，因此其 `validator` **不能引用 `<script setup>` 内部的局部变量**（如 `validTypes`），会抛提升错误。
 
-- 解法：把常量**内联进 validator**，或在 `defineProps` **之前**声明。
+- 解法：把常量放到**模块作用域**，例如 `src/constants.js` 导出后 `import` 引用（推荐，本项目已采用）；也可把常量**内联进 validator**。
+- 注意：仅在 `<script setup>` 内部"提前声明"并不保险，`defineProps` 的选项对象会被编译器整体搬出 `setup()`。
 - 参考提交：`e276b4e`。
 
 ### 2. `defineExpose` 暴露的 ref 会自动解包，父组件访问时不要加 `.value`
@@ -61,7 +64,7 @@ ticketRef.exporting.value = true
 ### 3. GitHub Pages 部署的关键点
 
 - `vite.config.js` 的 `base` 必须是 `'/train-ticket-maker/'`，否则线上资源 404。改用自定义域名或 `<user>.github.io` 根站点时需改回 `'/'`。
-- 路由使用 `createWebHashHistory()`（hash 模式），避免 Pages 上刷新出现 404。
+- 项目为单页应用，**已移除 `vue-router`**：`main.js` 直接挂载 `views/TrainTicketGengrate.vue`，访问路径就是 `base` 本身，不再需要 hash 模式规避刷新 404。
 - 保留 `public/.nojekyll`，关闭 Jekyll，防止下划线开头的文件被忽略。
 - `actions/configure-pages@v5` 需带 `enablement: true`；若该步骤因权限失败，手动到 **Settings → Pages** 把 Source 设为 **GitHub Actions** 后重跑。
 - **构建产物不入库**：`dist/`、`release/` 已在 `.gitignore` 中忽略，产物统一交给 CI 生成，不要本地提交。

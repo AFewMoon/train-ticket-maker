@@ -2,35 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+/* 全局 reset（margin / padding / box-sizing）由 Tailwind preflight 提供，此处不再重复 */
+
 @layer base {
-  :root {
-    --color-primary: #165DFF;
-  }
-
-  * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
-
-  html {
-    min-height: 100vh !important;
-  }
-
   body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    min-height: 100vh !important;
-  }
-}
-
-@layer components {
-  .text-primary {
-    color: var(--color-primary);
-  }
-
-  .bg-primary {
-    background-color: var(--color-primary);
   }
 }

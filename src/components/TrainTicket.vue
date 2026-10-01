@@ -162,12 +162,11 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { DISCOUNT_TEXT_MAP, VALID_DISCOUNT_TYPES } from '@/constants'
 
 // public/ 目录资源的运行时基准路径：开发环境为 '/'，GitHub Pages 子路径下为 '/train-ticket-maker/'
 // import.meta.env.BASE_URL 由 vite.config.js 的 base 决定，末尾一定带 '/'
 const publicBase = import.meta.env.BASE_URL
-
-const validTypes = ['student', 'discount', 'child', 'elder', 'military', 'disabled', 'group', 'worker-group', 'student-group', '兑', '']
 
 // 基础尺寸
 const BASE_WIDTH = 856
@@ -217,11 +216,10 @@ const props = defineProps({
     type: [String, Array],
     default: '',
     validator: (value) => {
-      const types = ['student', 'discount', 'child', 'elder', 'military', 'disabled', 'group', 'worker-group', 'student-group', '兑', '']
       if (Array.isArray(value)) {
-        return value.every(item => types.includes(item))
+        return value.every(item => VALID_DISCOUNT_TYPES.includes(item))
       }
-      return types.includes(value)
+      return VALID_DISCOUNT_TYPES.includes(value)
     }
   },
   detailLines: { type: Array, default: () => ['', ''] },
@@ -249,18 +247,12 @@ const discountTexts = computed(() => {
   const types = Array.isArray(props.discountType) ? props.discountType : props.discountType ? [props.discountType] : []
 
   types.forEach(type => {
-    switch(type) {
-      case 'student': texts.push('学', '惠'); break
-      case 'discount': texts.push('惠'); break
-      case 'child': texts.push('儿'); break
-      case 'elder': texts.push('老'); break
-      case 'military': texts.push('军'); break
-      case 'disabled': texts.push('残'); break
-      case 'group': texts.push('团'); break
-      case 'worker-group': texts.push('工'); break
-      case 'student-group': texts.push('学', '团'); break
-      default:
-        if (type && !validTypes.includes(type)) texts.push(type)
+    const mapped = DISCOUNT_TEXT_MAP[type]
+    if (mapped) {
+      texts.push(...mapped)
+    } else if (type && !VALID_DISCOUNT_TYPES.includes(type)) {
+      // 未知类型原样输出，保持既有行为
+      texts.push(type)
     }
   })
   return texts

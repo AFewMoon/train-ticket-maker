@@ -16,9 +16,9 @@
               <h3 class="text-lg font-semibold text-gray-700 mb-3">🚉 出发/到达</h3>
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div><label class="block text-xs text-gray-500 mb-1">出发站</label><input v-model="form.fromStation" type="text" class="w-full px-3 py-2 border rounded-md" placeholder="例：上海虹桥" required></div>
-                <div><label class="block text-xs text-gray-500 mb-1">出发站拼音</label><input v-model="form.fromPinyin" type="text" class="w-full px-3 py-2 border rounded-md" placeholder="例：ShanghaiHongqiao" @input="handleFromPinyinInput" required></div>
+                <div><label class="block text-xs text-gray-500 mb-1">出发站拼音</label><input v-model="form.fromPinyin" type="text" class="w-full px-3 py-2 border rounded-md" placeholder="例：ShanghaiHongqiao" @input="handlePinyinInput('fromPinyin', $event)" required></div>
                 <div><label class="block text-xs text-gray-500 mb-1">到达站</label><input v-model="form.toStation" type="text" class="w-full px-3 py-2 border rounded-md" placeholder="例：南京南" required></div>
-                <div><label class="block text-xs text-gray-500 mb-1">到达站拼音</label><input v-model="form.toPinyin" type="text" class="w-full px-3 py-2 border rounded-md" placeholder="例：Nanjingnan" @input="handleToPinyinInput" required></div>
+                <div><label class="block text-xs text-gray-500 mb-1">到达站拼音</label><input v-model="form.toPinyin" type="text" class="w-full px-3 py-2 border rounded-md" placeholder="例：Nanjingnan" @input="handlePinyinInput('toPinyin', $event)" required></div>
               </div>
             </div>
 
@@ -44,12 +44,12 @@
               <h3 class="text-lg font-semibold text-gray-700 mb-3">🎫 座位/价格</h3>
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div><label class="block text-xs text-gray-500 mb-1">车厢号</label><input v-model="form.carriage" type="text" class="w-full px-3 py-2 border rounded-md" placeholder="例：07" required></div>
-                <div v-if="sleeperTypes.includes(form.seatType)"><label class="block text-xs text-gray-500 mb-1">铺位类型</label><select v-model="form.berthType" class="w-full px-3 py-2 border rounded-md"><option value="">选择铺位</option><option value="上">上铺</option><option value="中">中铺</option><option value="下">下铺</option></select></div>
+                <div v-if="SLEEPER_TYPES.includes(form.seatType)"><label class="block text-xs text-gray-500 mb-1">铺位类型</label><select v-model="form.berthType" class="w-full px-3 py-2 border rounded-md"><option value="">选择铺位</option><option value="上">上铺</option><option value="中">中铺</option><option value="下">下铺</option></select></div>
                 
                 <!-- 座位号标签：无座时显示“座位”，其他显示“座位号” -->
                 <div>
                   <label class="block text-xs text-gray-500 mb-1">
-                    {{ sleeperTypes.includes(form.seatType) ? '铺位号' : (form.seatNumber === '无座' ? '座位' : '座位号') }}
+                    {{ SLEEPER_TYPES.includes(form.seatType) ? '铺位号' : (form.seatNumber === '无座' ? '座位' : '座位号') }}
                   </label>
                   <input v-model="form.seatNumber" type="text" class="w-full px-3 py-2 border rounded-md" placeholder="例：12F" required>
                 </div>
@@ -82,28 +82,7 @@
           <div class="bg-white rounded-lg shadow-md p-4">
             <h3 class="text-lg font-semibold text-gray-700 mb-3">🔍 实时预览</h3>
             <div class="preview-container flex items-center justify-center">
-              <TrainTicket
-                :serial="form.serial"
-                :gate="form.gate"
-                :fromStation="form.fromStation"
-                :fromPinyin="form.fromPinyin"
-                :toStation="form.toStation"
-                :toPinyin="form.toPinyin"
-                :trainCode="form.trainCode"
-                :dateTime="form.dateTime"
-                :carriage="form.carriage"
-                :seatNumber="form.seatNumber"
-                :berthType="form.berthType"
-                :price="form.price"
-                :seatType="form.seatType"
-                :idNumber="form.idNumber"
-                :passengerName="form.passengerName"
-                :footerInfo="form.footerInfo"
-                :discountType="form.discountType"
-                :style="form.ticketType"
-                :hasRefundFee="form.hasRefundFee"
-                :detail-lines="form.detailLines"
-              />
+              <TrainTicket v-bind="ticketProps" />
             </div>
           </div>
 
@@ -114,7 +93,7 @@
               <div class="border-b border-gray-200 pb-4">
                 <div class="flex items-center justify-between mb-3">
                   <h3 class="text-base font-semibold text-gray-700">🏷️ 底部售票编码</h3>
-                  <button @click="refreshRandomCodes" type="button" class="text-xs bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-md flex items-center gap-1">
+                  <button @click="randomizeCodes" type="button" class="text-xs bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-md flex items-center gap-1">
                     🔄 刷新编号
                   </button>
                 </div>
@@ -168,37 +147,16 @@
     </div>
 
     <!-- 隐藏的车票用于导出 -->
-    <div class="fixed top-0 left-0 w-[856px] h-[540px] bg-white z-[-1] opacity-0 pointer-events-none" id="hidden-ticket-area">
-      <TrainTicket
-        ref="hiddenTicketRef"
-        :serial="form.serial"
-        :gate="form.gate"
-        :fromStation="form.fromStation"
-        :fromPinyin="form.fromPinyin"
-        :toStation="form.toStation"
-        :toPinyin="form.toPinyin"
-        :trainCode="form.trainCode"
-        :dateTime="form.dateTime"
-        :carriage="form.carriage"
-        :seatNumber="form.seatNumber"
-        :berthType="form.berthType"
-        :price="form.price"
-        :seatType="form.seatType"
-        :idNumber="form.idNumber"
-        :passengerName="form.passengerName"
-        :footerInfo="form.footerInfo"
-        :discountType="form.discountType"
-        :style="form.ticketType"
-        :hasRefundFee="form.hasRefundFee"
-        :detail-lines="form.detailLines"
-      />
+    <div class="fixed top-0 left-0 w-[856px] h-[540px] bg-white z-[-1] opacity-0 pointer-events-none">
+      <TrainTicket ref="hiddenTicketRef" v-bind="ticketProps" />
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, nextTick, watch } from 'vue'
+import { ref, reactive, computed, onMounted, nextTick, watch } from 'vue'
 import TrainTicket from '@/components/TrainTicket.vue'
+import { SLEEPER_TYPES } from '@/constants'
 import { toPng } from 'html-to-image'
 
 const form = reactive({
@@ -229,11 +187,17 @@ const form = reactive({
   hasRefundFee: false,
 })
 
-const sleeperTypes = ['软卧', '硬卧', '动卧', '高级软卧', '一等卧', '二等卧', '新空调硬卧', '新空调软卧']
+// 车票组件所需的 props：字段名与 TrainTicket 保持一致，
+// 并剔除仅表单使用的字段（编码相关 + ticketType），避免透传到 DOM
+const ticketProps = computed(() => {
+  const { stationCode, datePrefix, sequence, dateSuffix, randomCode, ticketType, ...props } = form
+  return { ...props, style: ticketType }
+})
+
 const hiddenTicketRef = ref(null)
 
 watch(() => form.seatType, (newVal) => {
-  if (!sleeperTypes.includes(newVal)) form.berthType = ''
+  if (!SLEEPER_TYPES.includes(newVal)) form.berthType = ''
 })
 
 function randomNumber(min, max, length) {
@@ -258,11 +222,8 @@ function capitalizeFirstLetter(pinyin) {
   return lower.charAt(0).toUpperCase() + lower.slice(1)
 }
 
-function handleFromPinyinInput(event) {
-  form.fromPinyin = capitalizeFirstLetter(event.target.value)
-}
-function handleToPinyinInput(event) {
-  form.toPinyin = capitalizeFirstLetter(event.target.value)
+function handlePinyinInput(field, event) {
+  form[field] = capitalizeFirstLetter(event.target.value)
 }
 
 function calculateNextDate() {
@@ -271,13 +232,15 @@ function calculateNextDate() {
   return `${(date.getMonth() + 1).toString().padStart(2, '0')}${date.getDate().toString().padStart(2, '0')}`
 }
 
+// 售票点前缀的随机分布：30 占 40%、31 占 40%、33 占 10%、00 占 10%
+function randomDatePrefix() {
+  const rand = Math.random()
+  return rand < 0.4 ? '30' : rand < 0.8 ? '31' : rand < 0.9 ? '33' : '00'
+}
+
 function generateFooterInfo() {
   const station = form.stationCode || randomNumber(10000, 99999, 5)
-  let prefix = form.datePrefix
-  if (!prefix) {
-    const rand = Math.random()
-    prefix = rand < 0.4 ? '30' : rand < 0.8 ? '31' : rand < 0.9 ? '33' : '00'
-  }
+  const prefix = form.datePrefix || randomDatePrefix()
   const seq = form.sequence ? form.sequence.padStart(3, '0') : randomNumber(1, 24, 3)
   const suffix = form.dateSuffix || calculateNextDate()
   const code = form.randomCode ? form.randomCode.toUpperCase() : randomSevenDigitCode()
@@ -285,22 +248,11 @@ function generateFooterInfo() {
 }
 
 let isInitializing = false
-function initializeForm() {
-  form.stationCode = randomNumber(10000, 99999, 5)
-  const rand = Math.random()
-  form.datePrefix = rand < 0.4 ? '30' : rand < 0.8 ? '31' : rand < 0.9 ? '33' : '00'
-  form.sequence = randomNumber(1, 24, 3)
-  form.dateSuffix = calculateNextDate()
-  form.randomCode = randomSevenDigitCode()
-  form.serial = form.randomCode
-  form.footerInfo = generateFooterInfo()
-}
 
-// 手动刷新 JM 编号
-function refreshRandomCodes() {
+// 随机生成底部售票编码相关字段，初始化与「刷新编号」共用
+function randomizeCodes() {
   form.stationCode = randomNumber(10000, 99999, 5)
-  const rand = Math.random()
-  form.datePrefix = rand < 0.4 ? '30' : rand < 0.8 ? '31' : rand < 0.9 ? '33' : '00'
+  form.datePrefix = randomDatePrefix()
   form.sequence = randomNumber(1, 24, 3)
   form.dateSuffix = calculateNextDate()
   form.randomCode = randomSevenDigitCode()
@@ -310,7 +262,7 @@ function refreshRandomCodes() {
 
 onMounted(() => {
   isInitializing = true
-  initializeForm()
+  randomizeCodes()
   isInitializing = false
 })
 

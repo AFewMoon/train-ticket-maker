@@ -51,8 +51,7 @@
 
 | 技术 | 用途 |
 |------|------|
-| Vue 3 (Composition API) | 前端框架 |
-| Vue Router 4 | 路由（hash 模式） |
+| Vue 3 (Composition API) | 前端框架（单页，无路由） |
 | Vite | 构建工具 |
 | Tailwind CSS | 原子化 CSS |
 | html-to-image | HTML 转图片 |
@@ -123,11 +122,9 @@ train-ticket-maker/
 │   │   └── qrcode.png      # 二维码图片
 │   ├── components/
 │   │   └── TrainTicket.vue # 车票核心组件
-│   ├── router/
-│   │   └── index.js        # 路由（hash 模式，单路由）
 │   ├── views/
 │   │   └── TrainTicketGengrate.vue # 主页面
-│   ├── App.vue
+│   ├── constants.js        # 共享常量（卧铺类型、优惠映射）
 │   ├── main.js
 │   └── style.css
 ├── index.html
