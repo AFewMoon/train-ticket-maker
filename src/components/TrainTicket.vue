@@ -44,7 +44,7 @@
             ></div>
 
             <!-- 主信息：出发站 / 车次 / 到达站 -->
-            <div class="grid grid-cols-[1fr_auto_1fr] gap-[10px] px-[0px_20px_0_20px] items-center">
+            <div class="grid grid-cols-[1fr_auto_1fr] gap-[10px] items-center">
               <div class="station flex flex-col from items-center">
                 <div class="flex items-center flex-grow-0">
                   <div
@@ -144,7 +144,7 @@
               </div>
 
               <!-- 二维码 -->
-              <div class="qr self-end justify-self-end w-[148px] h-[148px] border-black p-[6px]" aria-hidden="true">
+              <div class="qr self-end justify-self-end w-[148px] h-[148px] border-[2px] border-black p-[6px]" aria-hidden="true">
                 <img src="@/assets/qrcode.png" alt="二维码" class="w-full h-full object-cover" />
               </div>
             </div>
@@ -370,8 +370,6 @@ defineExpose({ wrapper, exporting })
 
 /* 红色车票底部文字 */
 .footer-red {
-  left: -40px;
-  bottom: 8px;
   height: 52px;
 }
 </style>
