@@ -20,7 +20,7 @@ export const SLEEPER_TYPES = [
 ]
 
 // 优惠类型 -> 票面徽章文字（一个类型可能对应多个徽章，如学生票为「学 + 惠」）
-// 注：「兑」（积分兑换票）沿用既有行为，不显示徽章，故不在此表中
+// 本表是徽章文案的唯一数据源，VALID_DISCOUNT_TYPES 由其派生，新增优惠类型只需改这一处
 export const DISCOUNT_TEXT_MAP = {
   student: ['学', '惠'],
   discount: ['惠'],
@@ -31,7 +31,8 @@ export const DISCOUNT_TEXT_MAP = {
   group: ['团'],
   'worker-group': ['工'],
   'student-group': ['学', '团'],
+  '兑': ['兑'],
 }
 
 // 合法优惠类型（空字符串表示「无优惠」）
-export const VALID_DISCOUNT_TYPES = ['兑', ...Object.keys(DISCOUNT_TEXT_MAP), '']
+export const VALID_DISCOUNT_TYPES = [...Object.keys(DISCOUNT_TEXT_MAP), '']
