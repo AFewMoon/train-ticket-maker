@@ -30,12 +30,12 @@
         >
 
           <!-- 顶部栏（票号 + 检票口） -->
-          <div class="topbar flex items-center justify-between tracking-[0.3px]">
-            <div class="serial text-[#e35757] font-semibold">{{ serial }}</div>
-            <div class="gate" v-if="gate">检票：{{ gate }}</div>
+          <div class="flex items-center justify-between tracking-[0.3px]">
+            <div class="text-[#e35757] font-semibold">{{ serial }}</div>
+            <div v-if="gate">检票：{{ gate }}</div>
           </div>
 
-          <div class="bgmain">
+          <div>
             <!-- 蓝色车票背景纹理 -->
             <div
               v-if="!isRed"
@@ -45,7 +45,7 @@
 
             <!-- 主信息：出发站 / 车次 / 到达站 -->
             <div class="grid grid-cols-[1fr_auto_1fr] gap-[10px] items-center">
-              <div class="station flex flex-col from items-center">
+              <div class="flex flex-col items-center">
                 <div class="flex items-center flex-grow-0">
                   <div
                     class="station-name"
@@ -53,24 +53,24 @@
                   >
                     {{ fromStation }}
                   </div>
-                  <div class="big-fix px-[4px] py-[0px]">站</div>
+                  <div class="px-[4px]">站</div>
                 </div>
-                <div class="pinyin ml-[10px] mt-[-10px] text-[26px]">{{ fromPinyin }}</div>
+                <div class="ml-[10px] mt-[-10px] text-[26px]">{{ fromPinyin }}</div>
               </div>
 
               <!-- 中间列：车次 + 箭头 -->
-              <div class="train-center flex flex-col items-center justify-center">
-                <div class="train-code text-center text-[50px] leading-none pb-1">
+              <div class="flex flex-col items-center justify-center">
+                <div class="text-center text-[50px] leading-none pb-1">
                   {{ trainCode }}
                 </div>
                 <!-- CSS 箭头 -->
-                <div class="arrow mt-[6px] relative h-3 w-full">
-                  <div class="line h-[4px] bg-black w-full"></div>
-                  <div class="arrow-head absolute right-0 top-[-7px] h-4 w-4 border-t-[4px] border-black rotate-45"></div>
+                <div class="mt-[6px] relative h-3 w-full">
+                  <div class="h-[4px] bg-black w-full"></div>
+                  <div class="absolute right-0 top-[-7px] h-4 w-4 border-t-[4px] border-black rotate-45"></div>
                 </div>
               </div>
 
-              <div class="station to flex flex-col items-center">
+              <div class="flex flex-col items-center">
                 <div class="flex items-center flex-grow-0">
                   <div
                     class="station-name"
@@ -78,29 +78,29 @@
                   >
                     {{ toStation }}
                   </div>
-                  <div class="big-fix px-[4px] py-[0px]">站</div>
+                  <div class="px-[4px]">站</div>
                 </div>
-                <div class="pinyin ml-[10px] mt-[-10px] text-[26px]">{{ toPinyin }}</div>
+                <div class="ml-[10px] mt-[-10px] text-[26px]">{{ toPinyin }}</div>
               </div>
             </div>
 
             <!-- 第二行：时间 / 车厢座位 -->
             <div class="flex justify-between pr-[100px] mt-[-10px]">
-              <div class="datetime">
-                {{ dateTime.year }}<span class="small-fix text-[24px]">年</span>
-                {{ dateTime.month }}<span class="small-fix text-[24px]">月</span>
-                {{ dateTime.day }}<span class="small-fix text-[24px]">日</span>
-                {{ dateTime.time }}<span class="small-fix text-[24px]">开</span>
+              <div>
+                {{ dateTime.year }}<span class="text-[24px]">年</span>
+                {{ dateTime.month }}<span class="text-[24px]">月</span>
+                {{ dateTime.day }}<span class="text-[24px]">日</span>
+                {{ dateTime.time }}<span class="text-[24px]">开</span>
               </div>
               
               <!-- ====================== 这里已修改 ====================== -->
-              <div class="seat">
-                {{ carriage }}<span class="small-fix text-[24px]">车</span>
+              <div>
+                {{ carriage }}<span class="text-[24px]">车</span>
                 {{ seatNumber }}
                 <!-- 只有不是“无座”时才显示“号”字 -->
-                <span v-if="seatNumber !== '无座'" class="small-fix text-[24px]">号</span>
+                <span v-if="seatNumber !== '无座'" class="text-[24px]">号</span>
                 <span v-if="berthType">{{ berthType }}</span>
-                <span v-if="berthType" class="small-fix text-[24px]">铺</span>
+                <span v-if="berthType" class="text-[24px]">铺</span>
               </div>
               <!-- ========================================================= -->
 
@@ -117,18 +117,18 @@
               <div>
                 <span v-for="(text, index) in discountTexts" :key="index" class="discount-badge">{{ text }}</span>
               </div>
-              <div class="seat flex items-center gap-[12px]">
+              <div class="flex items-center gap-[12px]">
                 {{ seatType }}
               </div>
             </div>
 
-            <p class="muted text-[30px]"><br></p>
-            <p class="muted text-[30px]">仅供纪念使用</p>
+            <p class="text-[30px]"><br></p>
+            <p class="text-[30px]">仅供纪念使用</p>
 
             <!-- 详情与二维码 -->
-            <div class="detail-area relative grid grid-cols-[1fr_170px] gap-[16px]">
+            <div class="relative grid grid-cols-[1fr_170px] gap-[16px]">
               <div>
-                <div class="code">{{ idNumber }} {{ passengerName }}</div>
+                <div>{{ idNumber }} {{ passengerName }}</div>
                 <!-- 虚线框 -->
                 <div v-if="!isRed" class="details text-[24px] text-center mt-[-6px]">
                   <p>{{ detailLines[0] || '报销凭证 遗失不补' }}</p>
@@ -144,7 +144,7 @@
               </div>
 
               <!-- 二维码 -->
-              <div class="qr self-end justify-self-end w-[148px] h-[148px] border-[2px] border-black p-[6px]" aria-hidden="true">
+              <div class="self-end justify-self-end w-[148px] h-[148px] border-[2px] border-black p-[6px]" aria-hidden="true">
                 <img src="@/assets/qrcode.png" alt="二维码" class="w-full h-full object-cover" />
               </div>
             </div>
